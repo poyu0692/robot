@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://bwe1qneh2usx1"]
+
+[ext_resource type="Script" uid="uid://bteeioaieglg" path="res://main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://chl2mnyrywjoe" path="res://robot_view.gd" id="2_view"]
+
+[node name="Main" type="Node" unique_id=565068500]
+script = ExtResource("1_main")
+
+[node name="RobotView" type="Node2D" parent="." unique_id=1111343108]
+script = ExtResource("2_view")
