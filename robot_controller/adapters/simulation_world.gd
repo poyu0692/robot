@@ -1,7 +1,4 @@
-class_name SimulationWorld
-extends RefCounted
-
-const SENSOR_RANGE := 2.0
+class_name SimulationWorld extends RefCounted
 
 var _walls: Array[PackedVector2Array] = [
 	PackedVector2Array([Vector2(-2.0, -2.0), Vector2(2.0, -2.0)]),
@@ -28,7 +25,7 @@ func raycast(origin: Vector2, direction: Vector2) -> float:
 		var offset := wall_start - origin
 		var ray_distance := (offset.x * wall_vector.y - offset.y * wall_vector.x) / denominator
 		var wall_position := (offset.x * direction.y - offset.y * direction.x) / denominator
-		if ray_distance >= 0.0 and ray_distance <= SENSOR_RANGE and wall_position >= 0.0 and wall_position <= 1.0:
+		if ray_distance >= 0.0 and ray_distance <= SonarSpec.MAX_RANGE and wall_position >= 0.0 and wall_position <= 1.0:
 			if nearest < 0.0 or ray_distance < nearest:
 				nearest = ray_distance
 	return nearest

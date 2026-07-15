@@ -14,24 +14,46 @@ namespace Network {
         unsigned long lastReconnectAttemptMs = 0;
         unsigned long lastControllerPacketMs = 0;
         bool udpStarted = false;
+        bool udpStartFailed = false;
+        Status lastWiFiFailure = Status::WiFiConnecting;
     } // namespace
 
     bool begin() {
         udp.stop();
         udpStarted = udp.begin(LOCAL_PORT) == 1;
+        udpStartFailed = !udpStarted;
         return udpStarted;
     }
 
     void maintainConnection() {
-        if (WiFi.status() == WL_NO_MODULE) {
+        const int wifiStatus = WiFi.status();
+
+        if (wifiStatus == WL_NO_MODULE) {
             udp.stop();
             udpStarted = false;
+            udpStartFailed = false;
             hasController = false;
+            lastWiFiFailure = Status::WiFiConnecting;
             return;
         }
 
-        if (WiFi.status() == WL_CONNECTED) {
+        switch (wifiStatus) {
+            case WL_NO_SSID_AVAIL:
+                lastWiFiFailure = Status::SsidNotFound;
+                break;
+            case WL_CONNECT_FAILED:
+                lastWiFiFailure = Status::WiFiConnectFailed;
+                break;
+            case WL_CONNECTION_LOST:
+                lastWiFiFailure = Status::WiFiConnectionLost;
+                break;
+            default:
+                break;
+        }
+
+        if (wifiStatus == WL_CONNECTED) {
             hasReconnectAttempt = false;
+            lastWiFiFailure = Status::WiFiConnecting;
             if (!udpStarted) {
                 if (begin()) {
                     Serial.println("[Info] WiFi connected. UDP started.");
@@ -42,6 +64,7 @@ namespace Network {
         }
 
         udpStarted = false;
+        udpStartFailed = false;
         hasController = false;
         const unsigned long now = millis();
         if (hasReconnectAttempt && now - lastReconnectAttemptMs < RECONNECT_INTERVAL_MS) {
@@ -55,22 +78,53 @@ namespace Network {
     }
 
     Status status() {
-        if (WiFi.status() == WL_NO_MODULE) {
-            return Status::NoModule;
+        const int wifiStatus = WiFi.status();
+
+        switch (wifiStatus) {
+            case WL_NO_MODULE:
+                return Status::NoModule;
+            case WL_NO_SSID_AVAIL:
+                return Status::SsidNotFound;
+            case WL_CONNECT_FAILED:
+                return Status::WiFiConnectFailed;
+            case WL_CONNECTION_LOST:
+                return Status::WiFiConnectionLost;
+            case WL_IDLE_STATUS:
+            case WL_SCAN_COMPLETED:
+            case WL_DISCONNECTED:
+                break;
+            case WL_CONNECTED:
+                break;
+            default:
+                return Status::UnknownError;
         }
 
-        if (WiFi.status() != WL_CONNECTED || !udpStarted) {
-            return Status::Connecting;
+        if (wifiStatus != WL_CONNECTED &&
+            lastWiFiFailure != Status::WiFiConnecting) {
+            return lastWiFiFailure;
+        }
+
+        if (wifiStatus != WL_CONNECTED) {
+            return Status::WiFiConnecting;
+        }
+
+        if (!udpStarted) {
+            return udpStartFailed
+                ? Status::UdpStartFailed
+                : Status::WiFiConnecting;
         }
 
         const unsigned long now = millis();
         if (hasController && now - lastControllerPacketMs <= CONTROLLER_TIMEOUT_MS) {
             return Status::ControllerActive;
         }
-        return Status::WiFiConnected;
+        if (hasController) {
+            return Status::ControllerTimedOut;
+        }
+        return Status::WaitingForController;
     }
 
-    bool receiveMotorPacket(int32_t buf[2]) {
+    bool receiveMotorSpeedPacket(int32_t buf[2]) {
         constexpr size_t packetSize = sizeof(int32_t) * 2;
 
         if (!udpStarted) {

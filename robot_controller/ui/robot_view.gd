@@ -1,5 +1,4 @@
-class_name RobotView
-extends Node2D
+class_name RobotView extends Node2D
 
 const PIXELS_PER_METER := 80.0
 const GRID_SPACING := 0.5
@@ -13,7 +12,6 @@ var _map_texture: ImageTexture
 var _robot_position := Vector2.ZERO
 var _heading := 0.0
 var _last_distance := -1.0
-var _walls: Array[PackedVector2Array] = []
 
 
 func _ready() -> void:
@@ -23,13 +21,12 @@ func _ready() -> void:
 	_map_texture = ImageTexture.create_from_image(_map_image)
 
 
-func present(map: OccupancyMap, changed_cells: Array[Vector2i], robot_position: Vector2, heading: float, last_distance: float, walls: Array[PackedVector2Array]) -> void:
-	_map = map
-	_robot_position = robot_position
-	_heading = heading
-	_last_distance = last_distance
-	_walls = walls
-	_update_map_texture(changed_cells)
+func present(frame: RobotFrame) -> void:
+	_map = frame.map
+	_robot_position = frame.robot_position
+	_heading = frame.heading
+	_last_distance = frame.distance
+	_update_map_texture(frame.changed_cells)
 	queue_redraw()
 
 
@@ -47,7 +44,6 @@ func _draw() -> void:
 		return
 	_draw_map()
 	_draw_grid()
-	_draw_walls()
 	_draw_robot()
 	_draw_hud()
 
@@ -87,11 +83,6 @@ func _draw_grid() -> void:
 		y += GRID_SPACING
 
 
-func _draw_walls() -> void:
-	for wall in _walls:
-		draw_line(_world_to_screen(wall[0]), _world_to_screen(wall[1]), Color.from_rgba8(90, 160, 230), 2.0)
-
-
 func _draw_robot() -> void:
 	var center := _view_center()
 	var forward := _forward_direction()
@@ -109,7 +100,8 @@ func _draw_robot() -> void:
 
 func _draw_hud() -> void:
 	var font := ThemeDB.fallback_font
+	var bottom := get_viewport_rect().size.y
 	var distance_text := "Dist: --" if _last_distance < 0.0 else "Dist: %.2fm" % _last_distance
 	var pose_text := "x=%.2f y=%.2f %.0f°" % [_robot_position.x, _robot_position.y, rad_to_deg(_heading)]
-	draw_string(font, Vector2(8, 18), distance_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.from_rgba8(220, 220, 220))
-	draw_string(font, Vector2(8, 36), pose_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color.from_rgba8(160, 160, 160))
+	draw_string(font, Vector2(8, bottom - 26), distance_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.from_rgba8(220, 220, 220))
+	draw_string(font, Vector2(8, bottom - 8), pose_text, HORIZONTAL_ALIGNMENT_LEFT, -1, 13, Color.from_rgba8(160, 160, 160))

@@ -1,7 +1,5 @@
-class_name SimulatedRobot
-extends Robot
+class_name SimulatedRobot extends RefCounted
 
-const SENSOR_HALF_FOV := deg_to_rad(1.0)
 const MEASUREMENT_PERIOD := 0.06
 
 var _world: SimulationWorld
@@ -13,7 +11,7 @@ func _init(world: SimulationWorld) -> void:
 	_world = world
 
 
-func update(_direction: Vector2, robot_position: Vector2, heading: float, delta: float) -> void:
+func update(robot_position: Vector2, heading: float, delta: float) -> void:
 	_elapsed += delta
 	if _elapsed < MEASUREMENT_PERIOD:
 		return
@@ -31,7 +29,7 @@ func _distance_at(robot_position: Vector2, heading: float) -> float:
 	var nearest := -1.0
 	var forward := Vector2(sin(heading), -cos(heading))
 	for sample in range(9):
-		var angle := lerpf(-SENSOR_HALF_FOV, SENSOR_HALF_FOV, float(sample) / 8.0)
+		var angle := lerpf(-SonarSpec.HALF_FOV, SonarSpec.HALF_FOV, float(sample) / 8.0)
 		var distance := _world.raycast(robot_position, forward.rotated(angle))
 		if distance > 0.0 and (nearest < 0.0 or distance < nearest):
 			nearest = distance

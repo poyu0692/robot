@@ -3,7 +3,7 @@
 #include <WiFiS3.h>
 #include "const.h"
 #include "network.h"
-#include "status_display.h"
+#include "sonar.h"
 
 namespace Setup {
     void setupMotor();
@@ -14,7 +14,6 @@ namespace Setup {
         Serial.begin(115200);
         setupMotor();
         setupSonar();
-        StatusDisplay::begin();
         setupNetwork();
     }
 
@@ -28,7 +27,13 @@ namespace Setup {
 
     void setupSonar() {
         pinMode(Pin::SONAR_TRIG, OUTPUT);
+        digitalWrite(Pin::SONAR_TRIG, LOW);
         pinMode(Pin::SONAR_ECHO, INPUT);
+        attachInterrupt(
+            digitalPinToInterrupt(Pin::SONAR_ECHO),
+            Sonar::onEchoChange,
+            CHANGE
+        );
         Serial.println("[Info] Sonar setup done.");
     }
 

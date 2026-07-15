@@ -17,5 +17,6 @@ constexpr unsigned long RECONNECT_INTERVAL_MS = 5000;
 constexpr unsigned long CONTROLLER_TIMEOUT_MS = 1000;
 
 // Sonar
+constexpr unsigned long SONAR_TRIGGER_INTERVAL_US = 60000;
 constexpr unsigned long SONAR_ECHO_TIMEOUT_US = 30000;
 constexpr float SONAR_TEMPERATURE_C = 20.0f;

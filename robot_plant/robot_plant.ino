@@ -10,18 +10,18 @@ void setup() {
 void loop() {
     Network::maintainConnection();
 
-    if (Network::receiveMotorPacket(buf)) {
+    if (Network::receiveMotorSpeedPacket(buf)) {
         Motor::setSpeed(buf[0], buf[1]);
         Motor::printSpeed(buf[0], buf[1]);
     }
 
     const Network::Status networkStatus = Network::status();
-    const bool controllerActive = networkStatus == Network::Status::ControllerActive;
-    if (!controllerActive) {
+    const bool isControllerActive = networkStatus == Network::Status::ControllerActive;
+    if (!isControllerActive) {
         Motor::setSpeed(0, 0);
     }
 
-    if (Sonar::poll(distanceM) && controllerActive) {
+    if (Sonar::poll(distanceM) && isControllerActive) {
         Network::sendDistance(distanceM);
     }
 

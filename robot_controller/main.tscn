@@ -1,10 +1,29 @@
 [gd_scene format=3 uid="uid://bwe1qneh2usx1"]
 
-[ext_resource type="Script" uid="uid://bteeioaieglg" path="res://main.gd" id="1_main"]
-[ext_resource type="Script" uid="uid://chl2mnyrywjoe" path="res://robot_view.gd" id="2_view"]
+[ext_resource type="Script" uid="uid://cchif8t6dlawy" path="res://main.gd" id="1_main"]
+[ext_resource type="Script" uid="uid://delipode2pakj" path="res://ui/robot_view.gd" id="2_view"]
+[ext_resource type="Script" uid="uid://c3i1v37g217tu" path="res://ui/network_panel.gd" id="3_h2yge"]
 
 [node name="Main" type="Node" unique_id=565068500]
 script = ExtResource("1_main")
 
 [node name="RobotView" type="Node2D" parent="." unique_id=1111343108]
 script = ExtResource("2_view")
+
+[node name="ActivityLog" type="RichTextLabel" parent="." unique_id=899034195]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 408.0
+offset_bottom = 148.0
+mouse_filter = 2
+scroll_following = true
+
+[node name="NetworkPanel" type="Control" parent="." unique_id=901059427]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+script = ExtResource("3_h2yge")

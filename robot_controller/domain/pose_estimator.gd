@@ -1,5 +1,4 @@
-class_name PoseEstimator
-extends RefCounted
+class_name PoseEstimator extends RefCounted
 
 const MAX_SPEED := 0.30
 const MAX_TURN_RATE := PI * 0.5
