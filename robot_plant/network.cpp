@@ -57,6 +57,8 @@ namespace Network {
             if (!udpStarted) {
                 if (begin()) {
                     Serial.println("[Info] WiFi connected. UDP started.");
+                    Serial.print("[Info] Local IP: ");
+                    Serial.println(WiFi.localIP());
                 }
             }
 
