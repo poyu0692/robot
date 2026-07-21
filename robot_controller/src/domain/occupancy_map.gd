@@ -3,7 +3,8 @@ class_name OccupancyMap extends RefCounted
 const CELL_SIZE := 0.05
 const WIDTH := 480
 const HEIGHT := 480
-const OCCUPIED_HALF_FOV := deg_to_rad(3.0)
+# A returned echo means an obstacle may be anywhere within the sonar beam.
+const OCCUPIED_HALF_FOV := SonarSpec.HALF_FOV
 const OCCUPIED_BAND := 0.08
 const OCCUPIED_UPDATE := 0.85
 const FREE_UPDATE := -0.40
