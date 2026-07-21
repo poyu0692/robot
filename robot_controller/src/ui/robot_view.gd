@@ -1,6 +1,6 @@
 class_name RobotView extends Node2D
 
-const PIXELS_PER_METER := 80.0
+const PIXELS_PER_METER := 160.0
 const GRID_SPACING := 0.5
 const ROBOT_WIDTH := 0.18
 const ROBOT_LENGTH := 0.3

@@ -3,30 +3,30 @@
 #include "const.h"
 
 namespace {
-    int32_t pendingLeftSpeed;
-    int32_t pendingRightSpeed;
+    int pendingLeftSpeed;
+    int pendingRightSpeed;
     bool hasPendingSpeed = false;
 
-    void writeLeft(int32_t forward, int32_t reverse) {
+    void writeLeft(int forward, int reverse) {
         analogWrite(Pin::LEFT_MOTOR_FWD, forward);
         analogWrite(Pin::LEFT_MOTOR_REV, reverse);
     }
 
-    void writeRight(int32_t forward, int32_t reverse) {
+    void writeRight(int forward, int reverse) {
         analogWrite(Pin::RIGHT_MOTOR_FWD, forward);
         analogWrite(Pin::RIGHT_MOTOR_REV, reverse);
     }
 } // namespace
 
 namespace Motor {
-    void printSpeed(int32_t left, int32_t right) {
+    void printSpeed(int left, int right) {
         Serial.print("left: ");
         Serial.print(left);
         Serial.print(", right: ");
         Serial.println(right);
     }
 
-    void setSpeed(int32_t left, int32_t right) {
+    void setSpeed(int left, int right) {
         pendingLeftSpeed = left;
         pendingRightSpeed = right;
         hasPendingSpeed = true;
@@ -37,8 +37,8 @@ namespace Motor {
             return;
         }
 
-        const int32_t left = pendingLeftSpeed;
-        const int32_t right = pendingRightSpeed;
+        const int left = pendingLeftSpeed;
+        const int right = pendingRightSpeed;
         pendingLeftSpeed = 0;
         pendingRightSpeed = 0;
         hasPendingSpeed = false;

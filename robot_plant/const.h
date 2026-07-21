@@ -2,16 +2,16 @@
 
 namespace Pin {
     constexpr int LEFT_MOTOR_FWD = 9;
-    constexpr int LEFT_MOTOR_REV = 6;
-    constexpr int RIGHT_MOTOR_FWD = 5;
+    constexpr int LEFT_MOTOR_REV = 5;
+    constexpr int RIGHT_MOTOR_FWD = 6;
     constexpr int RIGHT_MOTOR_REV = 10;
     constexpr int SONAR_TRIG = 3;
     constexpr int SONAR_ECHO = 2;
 } // namespace Pin
 
 // Network
-constexpr char SSID[] = "room301DA";
-constexpr char PASSWORD[] = "PW4room301DA";
+constexpr char SSID[] = "OPPO Reno13 A n5hw";
+constexpr char PASSWORD[] = "fugt9727";
 constexpr unsigned int LOCAL_PORT = 1240;
 constexpr unsigned long RECONNECT_INTERVAL_MS = 5000;
 constexpr unsigned long CONTROLLER_TIMEOUT_MS = 1000;

@@ -15,6 +15,8 @@ namespace Network {
         unsigned long lastControllerPacketMs = 0;
         bool udpStarted = false;
         bool udpStartFailed = false;
+        bool localIpReported = false;
+        constexpr uint8_t MAX_MOTOR_PACKETS_PER_LOOP = 4;
         Status lastWiFiFailure = Status::WiFiConnecting;
     } // namespace
 
@@ -33,6 +35,7 @@ namespace Network {
             udpStarted = false;
             udpStartFailed = false;
             hasController = false;
+            localIpReported = false;
             lastWiFiFailure = Status::WiFiConnecting;
             return;
         }
@@ -57,9 +60,14 @@ namespace Network {
             if (!udpStarted) {
                 if (begin()) {
                     Serial.println("[Info] WiFi connected. UDP started.");
-                    Serial.print("[Info] Local IP: ");
-                    Serial.println(WiFi.localIP());
                 }
+            }
+
+            const IPAddress localIp = WiFi.localIP();
+            if (!localIpReported && localIp != IPAddress(0, 0, 0, 0)) {
+                Serial.print("[Info] Local IP: ");
+                Serial.println(localIp);
+                localIpReported = true;
             }
 
             return;
@@ -68,6 +76,7 @@ namespace Network {
         udpStarted = false;
         udpStartFailed = false;
         hasController = false;
+        localIpReported = false;
         const unsigned long now = millis();
         if (hasReconnectAttempt && now - lastReconnectAttemptMs < RECONNECT_INTERVAL_MS) {
             return;
@@ -133,20 +142,38 @@ namespace Network {
             return false;
         }
 
-        if (udp.parsePacket() != packetSize) {
-            return false;
-        }
+        // Motor input is state, so prefer the newest valid packet. The bound
+        // prevents a continuous packet stream from starving the main loop.
+        bool received = false;
+        for (uint8_t i = 0; i < MAX_MOTOR_PACKETS_PER_LOOP; ++i) {
+            const int packetLength = udp.parsePacket();
+            if (packetLength <= 0) {
+                break;
+            }
 
-        bool received = udp.read(
-            reinterpret_cast<uint8_t*>(buf),
-            packetSize
-        ) == packetSize;
+            if (packetLength != packetSize) {
+                udp.flush();
+                continue;
+            }
 
-        if (received) {
-            controllerIp = udp.remoteIP();
-            controllerPort = udp.remotePort();
-            hasController = true;
-            lastControllerPacketMs = millis();
+            int32_t latest[2];
+            const IPAddress senderIp = udp.remoteIP();
+            const uint16_t senderPort = udp.remotePort();
+            const bool valid = udp.read(
+                reinterpret_cast<uint8_t*>(latest),
+                packetSize
+            ) == packetSize;
+            udp.flush();
+
+            if (valid) {
+                buf[0] = latest[0];
+                buf[1] = latest[1];
+                controllerIp = senderIp;
+                controllerPort = senderPort;
+                hasController = true;
+                lastControllerPacketMs = millis();
+                received = true;
+            }
         }
 
         return received;

@@ -3,7 +3,7 @@
 #include <stdint.h>
 
 namespace Motor {
-    void setSpeed(int32_t leftSpeed, int32_t rightSpeed);
+    void setSpeed(int leftSpeed, int rightSpeed);
     void drive();
-    void printSpeed(int32_t leftSpeed, int32_t rightSpeed);
+    void printSpeed(int leftSpeed, int rightSpeed);
 } // namespace Motor
