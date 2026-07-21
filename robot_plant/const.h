@@ -10,8 +10,8 @@ namespace Pin {
 } // namespace Pin
 
 // Network
-constexpr char SSID[] = "";
-constexpr char PASSWORD[] = "";
+constexpr char SSID[] = "room301DA";
+constexpr char PASSWORD[] = "PW4room301DA";
 constexpr unsigned int LOCAL_PORT = 1240;
 constexpr unsigned long RECONNECT_INTERVAL_MS = 5000;
 constexpr unsigned long CONTROLLER_TIMEOUT_MS = 1000;

@@ -1,4 +1,4 @@
-#include "src/lib.h"
+#include "lib.h"
 
 int32_t buf[2]; // buf[0]: left, buf[1]: right
 float distanceM;
