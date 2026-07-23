@@ -11,9 +11,9 @@ namespace Pin {
 
 // Network
 //"OPPO Reno13 A n5hw"
-constexpr char SSID[] = "TT";
+constexpr char SSID[] = "OPPO Reno13 A n5hw";
 // "fugt9727"
-constexpr char PASSWORD[] = "Tsubasa06102004";
+constexpr char PASSWORD[] = "fugt9727";
 constexpr unsigned int LOCAL_PORT = 1240;
 constexpr unsigned long RECONNECT_INTERVAL_MS = 5000;
 constexpr unsigned long CONTROLLER_TIMEOUT_MS = 1000;

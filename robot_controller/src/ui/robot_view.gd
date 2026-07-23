@@ -26,13 +26,15 @@ func present(frame: RobotFrame) -> void:
 	_robot_position = frame.robot_position
 	_heading = frame.heading
 	_last_distance = frame.distance
-	_update_map_texture(frame.changed_cells)
+	_update_map_texture(frame.changed_cells, frame.replaces_previous_view)
 	queue_redraw()
 
 
-func _update_map_texture(changed_cells: Array[Vector2i]) -> void:
-	if changed_cells.is_empty():
+func _update_map_texture(changed_cells: Array[Vector2i], replaces_previous_view: bool) -> void:
+	if changed_cells.is_empty() and not replaces_previous_view:
 		return
+	if replaces_previous_view:
+		_map_image.fill(Color8(128, 128, 128))
 	for cell in changed_cells:
 		var shade := _map.shade_at(cell)
 		_map_image.set_pixel(cell.x, cell.y, Color8(shade, shade, shade))

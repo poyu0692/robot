@@ -1,12 +1,18 @@
 class_name OccupancyMap extends RefCounted
 
 # マップ1セルの一辺の長さ [m]。
-const CELL_SIZE := 0.05
+const CELL_SIZE := 0.025
 # マップの横方向のセル数 [セル]。
-const WIDTH := 480
+const WIDTH := 960
 # マップの縦方向のセル数 [セル]。
-const HEIGHT := 480
+const HEIGHT := 960
+# 超音波センサで壁として扱う最大測距距離 [m]。
+const SONAR_MAX_RANGE := 4.0
+# 超音波センサの視野の半角 [rad]。正面の左右にこの角度まで測距する。
+const SONAR_HALF_FOV := deg_to_rad(3.0)
+# 壁として占有を書き込む視野の半角 [rad]。現在はSONAR_HALF_FOVより広いため、全測距線が対象になる。
 const OCCUPIED_HALF_FOV := deg_to_rad(3.0)
+# 検出距離の手前側を壁として塗る帯の太さ [m]。
 const OCCUPIED_BAND := 0.08
 # 壁を観測したときにセルへ足す占有の確信度（対数オッズ）。
 const OCCUPIED_UPDATE := 2.0
@@ -25,6 +31,10 @@ var _values := PackedFloat32Array()
 
 func _init() -> void:
 	_values.resize(WIDTH * HEIGHT)
+
+
+func clear() -> void:
+	_values.fill(0.0)
 
 
 func integrate(distance: float, robot_position: Vector2, heading: float) -> Array[Vector2i]:

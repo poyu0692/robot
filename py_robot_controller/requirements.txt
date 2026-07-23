@@ -1,2 +1,0 @@
-# pygame-ce provides the same `import pygame` API and ships wheels for Python 3.14.
-pygame-ce>=2.5.7,<3

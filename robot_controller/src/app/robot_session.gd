@@ -47,8 +47,12 @@ func process(direction: Vector2, delta: float) -> RobotFrame:
 	_pose.update(direction, delta)
 	var distance: Variant = _update_backend(direction, delta)
 	var changed_cells: Array[Vector2i] = []
+	var replaces_previous_view := distance != null
 	if distance != null:
 		_last_distance = float(distance)
+		# A received measurement replaces the prior sensor view.  Between
+		# measurements, keep the last view while the pose continues to move.
+		_map.clear()
 		changed_cells = _map.integrate(_last_distance, _pose.robot_position, _pose.heading)
 	return RobotFrame.new(
 		_map,
@@ -56,6 +60,7 @@ func process(direction: Vector2, delta: float) -> RobotFrame:
 		_pose.robot_position,
 		_pose.heading,
 		_last_distance,
+		replaces_previous_view,
 	)
 
 

@@ -1,6 +1,6 @@
 class_name Main extends Node
 
-const DEFAULT_ROBOT_IP := "10.119.23.109"
+const DEFAULT_ROBOT_IP := "10.78.166.153"
 const DEFAULT_ROBOT_PORT := 1240
 const MAX_LOG_LINES := 200
 

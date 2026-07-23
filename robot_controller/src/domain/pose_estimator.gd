@@ -3,7 +3,7 @@ class_name PoseEstimator extends RefCounted
 # Measured at full forward input: 6 m in 21.23 s.
 const MAX_SPEED := 6.0 / 21.23
 # Measured at full turn input: 10 rotations in 31.85 s.
-const MAX_TURN_RATE := (20.0 * PI) / 31.85
+const MAX_TURN_RATE := (20.0 * PI) / 33.85
 
 var robot_position := Vector2.ZERO
 var heading := 0.0
