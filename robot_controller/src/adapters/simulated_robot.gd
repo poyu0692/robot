@@ -29,7 +29,7 @@ func _distance_at(robot_position: Vector2, heading: float) -> float:
 	var nearest := -1.0
 	var forward := Vector2(sin(heading), -cos(heading))
 	for sample in range(9):
-		var angle := lerpf(-SonarSpec.HALF_FOV, SonarSpec.HALF_FOV, float(sample) / 8.0)
+		var angle := lerpf(-OccupancyMap.SONAR_HALF_FOV, OccupancyMap.SONAR_HALF_FOV, float(sample) / 8.0)
 		var distance := _world.raycast(robot_position, forward.rotated(angle))
 		if distance > 0.0 and (nearest < 0.0 or distance < nearest):
 			nearest = distance

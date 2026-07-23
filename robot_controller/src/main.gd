@@ -34,7 +34,7 @@ func _connect_robot(address: String, port: int, use_simulation: bool) -> void:
 	session.start()
 
 
-func _process(delta: float) -> void:
+func _physics_process(delta: float) -> void:
 	if session == null:
 		return
 	var direction := Vector2.ZERO

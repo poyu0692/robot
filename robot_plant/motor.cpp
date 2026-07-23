@@ -50,8 +50,8 @@ namespace Motor {
             // Reverse
             writeLeft(0, -left);
         } else {
-            // Brake
-            writeLeft(255, 255);
+            // Coast: release the motor instead of actively braking it.
+            writeLeft(0, 0);
         }
 
         if (right > 0) {
@@ -61,8 +61,8 @@ namespace Motor {
             // Reverse
             writeRight(0, -right);
         } else {
-            // Brake
-            writeRight(255, 255);
+            // Coast: release the motor instead of actively braking it.
+            writeRight(0, 0);
         }
     }
 } // namespace Motor

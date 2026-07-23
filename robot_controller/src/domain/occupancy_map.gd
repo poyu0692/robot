@@ -1,16 +1,31 @@
 class_name OccupancyMap extends RefCounted
 
+# マップ1セルの一辺の長さ [m]。
 const CELL_SIZE := 0.05
+# マップの横方向のセル数 [セル]。
 const WIDTH := 480
+# マップの縦方向のセル数 [セル]。
 const HEIGHT := 480
+# 超音波センサで壁として扱う最大測距距離 [m]。
+const SONAR_MAX_RANGE := 4.0
+# 超音波センサの視野の半角 [rad]。正面の左右にこの角度まで測距する。
+const SONAR_HALF_FOV := deg_to_rad(3.0)
+# 壁として占有を書き込む視野の半角 [rad]。現在はSONAR_HALF_FOVより広いため、全測距線が対象になる。
 const OCCUPIED_HALF_FOV := deg_to_rad(3.0)
+# 検出距離の手前側を壁として塗る帯の太さ [m]。
 const OCCUPIED_BAND := 0.08
-const OCCUPIED_UPDATE := 0.85
-const FREE_UPDATE := -0.40
+# 壁を観測したときにセルへ足す占有の確信度（対数オッズ）。
+const OCCUPIED_UPDATE := 2.0
+# 空き空間を観測したときにセルへ足す確信度（対数オッズ）。黒を急に消さないよう壁より小さくする。
+const FREE_UPDATE := -0.8
+# セルに保持する確信度（対数オッズ）の下限。
 const MIN_LOG_ODDS := -5.0
+# セルに保持する確信度（対数オッズ）の上限。
 const MAX_LOG_ODDS := 5.0
 
+# マップ左上端のワールド座標 [m]。
 var origin := Vector2(-WIDTH * CELL_SIZE * 0.5, -HEIGHT * CELL_SIZE * 0.5)
+# 各セルの占有確信度（対数オッズ）を1次元で保持した配列。
 var _values := PackedFloat32Array()
 
 
@@ -20,10 +35,11 @@ func _init() -> void:
 
 func integrate(distance: float, robot_position: Vector2, heading: float) -> Array[Vector2i]:
 	var changed_cells: Array[Vector2i] = []
-	if distance == 0.0:
+	# 負の値は超音波が反射を受け取れなかったことを表す。空き空間の証拠ではない。
+	if distance <= 0.0:
 		return changed_cells
-	var has_obstacle := distance > 0.0 and distance <= SonarSpec.MAX_RANGE
-	var scan_range := distance if has_obstacle else SonarSpec.MAX_RANGE
+	var has_obstacle := distance > 0.0 and distance <= SONAR_MAX_RANGE
+	var scan_range := distance if has_obstacle else SONAR_MAX_RANGE
 	_stamp_fan(scan_range, has_obstacle, robot_position, heading, changed_cells)
 	return changed_cells
 
@@ -35,11 +51,11 @@ func shade_at(cell: Vector2i) -> int:
 
 
 func _stamp_fan(distance: float, has_obstacle: bool, robot_position: Vector2, heading: float, changed_cells: Array[Vector2i]) -> void:
-	var ray_count := maxi(1, int(ceil(distance * SonarSpec.HALF_FOV * 2.0 / CELL_SIZE)))
+	var ray_count := maxi(1, int(ceil(distance * SONAR_HALF_FOV * 2.0 / CELL_SIZE)))
 	var start := world_to_cell(robot_position)
 	var forward := Vector2(sin(heading), -cos(heading))
 	for ray in range(ray_count + 1):
-		var angle := lerpf(-SonarSpec.HALF_FOV, SonarSpec.HALF_FOV, float(ray) / ray_count)
+		var angle := lerpf(-SONAR_HALF_FOV, SONAR_HALF_FOV, float(ray) / ray_count)
 		var end := world_to_cell(robot_position + forward.rotated(angle) * distance)
 		_stamp_ray(start, end, distance, has_obstacle, absf(angle) <= OCCUPIED_HALF_FOV, robot_position, changed_cells)
 

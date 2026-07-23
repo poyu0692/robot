@@ -2,7 +2,8 @@ class_name RobotUdpClient extends RefCounted
 
 signal link_event(message: String)
 
-const CONTROL_PERIOD := 0.05
+# Keep the robot watchdog fed while limiting UDP traffic to 6 Hz.
+const CONTROL_PERIOD := 1.0 / 6.0
 const MOTOR_LIMIT := 255
 const INITIAL_RESPONSE_TIMEOUT := 8.0
 const LINK_LOSS_TIMEOUT := 3.0

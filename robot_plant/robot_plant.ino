@@ -26,5 +26,6 @@ void loop() {
     }
 
     Motor::drive();
-    StatusDisplay::update(networkStatus);
+    // StatusDisplay::update(networkStatus);
+    delay(0.01);
 }

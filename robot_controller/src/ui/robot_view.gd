@@ -93,9 +93,9 @@ func _draw_robot() -> void:
 	var front_right := center + forward * half_length - side * half_width
 	var rear_right := center - forward * half_length - side * half_width
 	var rear_left := center - forward * half_length + side * half_width
-	draw_colored_polygon(PackedVector2Array([front_left, front_right, rear_right, rear_left]), ROBOT_COLOR)
+	draw_polyline(PackedVector2Array([front_left, front_right, rear_right, rear_left, front_left]), ROBOT_COLOR, 2.0, true)
 	var nose := center + forward * (half_length + half_width * 0.6)
-	draw_colored_polygon(PackedVector2Array([front_left, front_right, nose]), ROBOT_COLOR.darkened(0.45))
+	draw_polyline(PackedVector2Array([front_left, nose, front_right]), ROBOT_COLOR, 2.0, true)
 
 
 func _draw_hud() -> void:
